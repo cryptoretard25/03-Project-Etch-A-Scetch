@@ -1,10 +1,16 @@
 const { log } = console;
+let x = 0;
+const canvas = document.querySelector("div.grid-window");
+const leftMenu = document.querySelector(".left-menu");
 
-const drawField = document.querySelector("div.grid-window");
+createCanvas();
 
-drawField.addEventListener("mousedown", onmousedown);
+canvas.addEventListener("mousedown", onmousedown);
+leftMenu.addEventListener("input", handleInputs);
+leftMenu.addEventListener("mousedown", handleClicks);
 
-function onmousedown() {
+// canvas handlers
+function onmousedown(e) {
   window.addEventListener("mousemove", onmousemove);
   window.addEventListener("mouseup", onmouseup);
 }
@@ -15,29 +21,98 @@ function onmouseup() {
 }
 
 function onmousemove(e) {
+  e.preventDefault();
   const pixel = e.target;
-  const check = [...pixel.classList];
-  if (!check.includes("item")) return;
-  setTargetColor(pixel, 100, 100, 100);
+  if (pixel.classList.contains("item")) handleColors(pixel);
 }
 
-function createDrawField(x, y) {
-  if (x !== y || x > 60 || x < 1) return;
-  const total = x * y;
-  drawField.setAttribute(
+// left menu handlers
+function handleInputs(e) {
+  if (e.target.classList.contains("canvas-color")) {
+    const value = e.target.value;
+    canvas.style.backgroundColor = value;
+  }
+  if (e.target.classList.contains("slider")) {
+    e.preventDefault();
+    canvas.replaceChildren();
+    const sliderValue = e.target.value;
+    createCanvas(sliderValue);
+  }
+}
+
+function handleClicks(e) {
+  const button = e.target;
+  if (button.classList.contains("button")) {
+    button.classList.add("btn-clicked");
+    button.addEventListener("transitionend", function (e) {
+      if (e.propertyName !== "transform") return;
+      button.classList.remove("btn-clicked");
+    });
+  }
+  if (button.classList.contains("rainbow-mode")) {
+    if (!button.classList.contains("btn-active")) {
+      button.classList.add("btn-active");
+      button.nextElementSibling.classList.remove("btn-active");
+      log("added");
+    } else {
+      button.classList.remove("btn-active");
+      log("removed");
+    }
+  }
+  if (button.classList.contains("shadow-mode")) {
+    if (!button.classList.contains("btn-active")) {
+      button.classList.add("btn-active");
+      button.previousElementSibling.classList.remove("btn-active");
+      log("added");
+    } else {
+      button.classList.remove("btn-active");
+      log("removed");
+    }
+  }
+}
+
+// helper functions
+function createCanvas(x = 16) {
+  if (x > 60 || x < 1) return;
+
+  const slider = document.querySelector(".slider");
+  const current = document.querySelectorAll(".current-value");
+  current[0].textContent = slider.value;
+  current[1].textContent = slider.value;
+  const total = Math.pow(x, 2);
+  canvas.setAttribute(
     "style",
-    `grid-template-columns: repeat(${x}, 1fr); grid-template-rows: repeat(${y}, 1fr);`
+    `grid-template-columns: repeat(${x}, 1fr); grid-template-rows: repeat(${x}, 1fr);`
   );
   for (let i = 1; i <= total; i++) {
     const item = document.createElement("div");
     item.classList.add(`item${i}`, `item`, `border-bottom-right`);
-    drawField.appendChild(item);
+    canvas.appendChild(item);
   }
 }
 
-function setTargetColor(target, r, g, b) {
-  target.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+function handleColors(target) {
+  const btnRainbow = document.querySelector(".rainbow-mode");
+  const btnShadow = document.querySelector(".shadow-mode");
+  if (btnRainbow.classList.contains("btn-active")) {
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    target.style.backgroundColor = `#${randomColor}`;
+  } else if (btnShadow.classList.contains("btn-active")) {
+    const pencolor = document.querySelector(".pen-color");
+    if (target.style.opacity) {
+      if (target.style.opacity >= 1) return;
+      target.style.opacity = +target.style.opacity + 0.02;
+      log(target.style.opacity);
+    } else {
+      const color = pencolor.value;
+      Object.assign(target.style, {
+        opacity: "0.1",
+        "background-color": `${color}`,
+      });
+    }
+  } else {
+    const pencolor = document.querySelector(".pen-color");
+    const color = pencolor.value;
+    target.style.backgroundColor = `${color}`;
+  }
 }
-
-createDrawField(60, 60);
-//setTargetColor(document.querySelector(".item25"), 67, 114, 156);

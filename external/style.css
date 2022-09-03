@@ -15,19 +15,24 @@ div.test {
   border: 1px dashed red;
   height: auto;
 }
-.header{
-    padding: 20px 0;
-    grid-area: header;
-    justify-self: center;
+span {
+  font-size: inherit;
 }
-.left-menu{
-    grid-area: left-menu;
-    justify-self: right;
-    width: 300px;
-    display: grid;
-    align-content: center;
-    align-items: center;
-    justify-items: center;
+.header {
+  padding: 20px 0;
+  grid-area: header;
+  justify-self: center;
+}
+.left-menu {
+  grid-area: left-menu;
+  justify-self: right;
+  width: 20vw;
+  min-width: 220px;
+  display: grid;
+  align-content: center;
+  justify-items: end;
+  justify-content: center;
+  grid-gap: 1rem;
 }
 
 .item.border-bottom-right {
@@ -47,9 +52,9 @@ div.test {
   border: 1px solid brown;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: auto 1fr;
-  grid-template-areas: 
-  "header header header"
-  "left-menu box right-menu";
+  grid-template-areas:
+    "header header header"
+    "left-menu box right-menu";
 }
 
 .grid-window {
@@ -59,6 +64,78 @@ div.test {
   height: 600px;
   width: 600px;
   display: grid;
-  grid-template-columns: repeat(16, 1fr);
-  grid-template-rows: repeat(16 1fr);
+  /* grid-template-columns: repeat(16, 1fr);
+  grid-template-rows: repeat(16 1fr); */
+}
+
+.btn-group .button {
+  background-color: white;
+  color: black;
+  border: 2px solid #555555;
+  padding: 10px 22px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  width: 150px;
+  display: block;
+  font-size: 0.8rem;
+  transition: 0.4s;
+}
+
+.btn-group .button:hover {
+  background-color: #555555;
+  color: white;
+}
+
+.button.btn-active{
+  transform: scale(1.15);
+  background-color: #555555;
+  color: white;
+}
+
+.button.btn-clicked{
+  transform: scale(1.1);
+  border-color: #868583;
+  box-shadow: 0 0 1rem #868583;
+}
+
+.range-container {
+  min-width: 150px;
+  width: auto;
+  display: block;
+  -border: 1px solid gray;
+  font-size: 0.8rem;
+  justify-self: end;
+  text-align: center;
+}
+
+input[type="color"] {
+  outline: none;
+  border: none;
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 2px;
+}
+
+input[type="range"]{
+  -webkit-appearance: none;
+  width: 150px;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #555555;
+  cursor: pointer;
+}
+
+input[type="range"]:hover{
+ opacity: 1;
 }
