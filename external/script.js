@@ -11,19 +11,64 @@ leftMenu.addEventListener("mousedown", handleClicks);
 
 // canvas handlers
 function onmousedown(e) {
-  window.addEventListener("mousemove", onmousemove);
+  e.preventDefault();
+  const btnRainbow = document.querySelector(".rainbow-mode");
+  const btnShadow = document.querySelector(".shadow-mode");
+  if (btnRainbow.classList.contains("btn-active")) {
+    window.addEventListener("mouseout", rainbow);
+  } else if (btnShadow.classList.contains("btn-active")) {
+    window.addEventListener("mouseout", shadow);
+  } else {
+    window.addEventListener("mousemove", onmousemove);
+  }
   window.addEventListener("mouseup", onmouseup);
+}
+
+function rainbow(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const target = e.target;
+  if (target.classList.contains("item")) {
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    target.style.backgroundColor = `#${randomColor}`;
+  }
+}
+
+function shadow(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const target = e.target;
+  if (target.classList.contains("item")) {
+    const pencolor = document.querySelector(".pen-color");
+    if (target.style.opacity) {
+      if (target.style.opacity >= 1) return;
+      target.style.opacity = +target.style.opacity + 0.1;
+      log(target.style.opacity);
+    } else {
+      const color = pencolor.value;
+      Object.assign(target.style, {
+        opacity: "0.1",
+        "background-color": `${color}`,
+      });
+    }
+  }
 }
 
 function onmouseup() {
   this.removeEventListener("mousemove", onmousemove);
   this.removeEventListener("mouseup", onmouseup);
+  this.removeEventListener("mouseout", rainbow);
+  this.removeEventListener("mouseout", shadow);
 }
 
 function onmousemove(e) {
   e.preventDefault();
   const pixel = e.target;
-  if (pixel.classList.contains("item")) handleColors(pixel);
+  if (pixel.classList.contains("item")) {
+    const pencolor = document.querySelector(".pen-color");
+    const color = pencolor.value;
+    pixel.style.backgroundColor = `${color}`;
+  }
 }
 
 // left menu handlers
@@ -88,31 +133,5 @@ function createCanvas(x = 16) {
     const item = document.createElement("div");
     item.classList.add(`item${i}`, `item`, `border-bottom-right`);
     canvas.appendChild(item);
-  }
-}
-
-function handleColors(target) {
-  const btnRainbow = document.querySelector(".rainbow-mode");
-  const btnShadow = document.querySelector(".shadow-mode");
-  if (btnRainbow.classList.contains("btn-active")) {
-    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-    target.style.backgroundColor = `#${randomColor}`;
-  } else if (btnShadow.classList.contains("btn-active")) {
-    const pencolor = document.querySelector(".pen-color");
-    if (target.style.opacity) {
-      if (target.style.opacity >= 1) return;
-      target.style.opacity = +target.style.opacity + 0.02;
-      log(target.style.opacity);
-    } else {
-      const color = pencolor.value;
-      Object.assign(target.style, {
-        opacity: "0.1",
-        "background-color": `${color}`,
-      });
-    }
-  } else {
-    const pencolor = document.querySelector(".pen-color");
-    const color = pencolor.value;
-    target.style.backgroundColor = `${color}`;
   }
 }
