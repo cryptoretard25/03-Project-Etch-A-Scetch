@@ -140,6 +140,7 @@ function handleClicks(e) {
   if (button.classList.contains("clear")) {
     log(button);
     createCanvas(slider.value);
+    canvas.style.backgroundColor = document.querySelector('.canvas-color').value;
   }
 }
 
