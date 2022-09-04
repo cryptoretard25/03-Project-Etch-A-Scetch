@@ -1,9 +1,10 @@
 const { log } = console;
 let x = 0;
 const canvas = document.querySelector("div.grid-window");
+const slider = document.querySelector(".slider");
 const leftMenu = document.querySelector(".left-menu");
 
-createCanvas();
+createCanvas(slider.value);
 
 canvas.addEventListener("mousedown", onmousedown);
 leftMenu.addEventListener("input", handleInputs);
@@ -25,7 +26,7 @@ function onmousedown(e) {
 }
 
 function rainbow(e) {
-  e.preventDefault();
+  //e.preventDefault();
   e.stopPropagation();
   const target = e.target;
   if (target.classList.contains("item")) {
@@ -35,7 +36,7 @@ function rainbow(e) {
 }
 
 function shadow(e) {
-  e.preventDefault();
+  //e.preventDefault();
   e.stopPropagation();
   const target = e.target;
   if (target.classList.contains("item")) {
@@ -54,21 +55,27 @@ function shadow(e) {
   }
 }
 
+function onmousemove(e) {
+  //e.preventDefault();
+  const btnErase = document.querySelector(".erase-mode");
+  const pixel = e.target;
+
+  if (pixel.classList.contains("item")) {
+    if (btnErase.classList.contains("btn-active")) {
+      pixel.removeAttribute("style", "background-color; opacity");
+    } else {
+      const pencolor = document.querySelector(".pen-color");
+      const color = pencolor.value;
+      pixel.style.backgroundColor = `${color}`;
+    }
+  }
+}
+
 function onmouseup() {
   this.removeEventListener("mousemove", onmousemove);
   this.removeEventListener("mouseup", onmouseup);
   this.removeEventListener("mouseout", rainbow);
   this.removeEventListener("mouseout", shadow);
-}
-
-function onmousemove(e) {
-  e.preventDefault();
-  const pixel = e.target;
-  if (pixel.classList.contains("item")) {
-    const pencolor = document.querySelector(".pen-color");
-    const color = pencolor.value;
-    pixel.style.backgroundColor = `${color}`;
-  }
 }
 
 // left menu handlers
@@ -78,8 +85,6 @@ function handleInputs(e) {
     canvas.style.backgroundColor = value;
   }
   if (e.target.classList.contains("slider")) {
-    e.preventDefault();
-    canvas.replaceChildren();
     const sliderValue = e.target.value;
     createCanvas(sliderValue);
   }
@@ -94,10 +99,14 @@ function handleClicks(e) {
       button.classList.remove("btn-clicked");
     });
   }
+
   if (button.classList.contains("rainbow-mode")) {
     if (!button.classList.contains("btn-active")) {
       button.classList.add("btn-active");
       button.nextElementSibling.classList.remove("btn-active");
+      button.nextElementSibling.nextElementSibling.classList.remove(
+        "btn-active"
+      );
       log("added");
     } else {
       button.classList.remove("btn-active");
@@ -108,19 +117,36 @@ function handleClicks(e) {
     if (!button.classList.contains("btn-active")) {
       button.classList.add("btn-active");
       button.previousElementSibling.classList.remove("btn-active");
+      button.nextElementSibling.classList.remove("btn-active");
       log("added");
     } else {
       button.classList.remove("btn-active");
       log("removed");
     }
   }
+  if (button.classList.contains("erase-mode")) {
+    if (!button.classList.contains("btn-active")) {
+      button.classList.add("btn-active");
+      button.previousElementSibling.previousElementSibling.classList.remove(
+        "btn-active"
+      );
+      button.previousElementSibling.classList.remove("btn-active");
+      log("added");
+    } else {
+      button.classList.remove("btn-active");
+      log("removed");
+    }
+  }
+  if (button.classList.contains("clear")) {
+    log(button);
+    createCanvas(slider.value);
+  }
 }
 
 // helper functions
 function createCanvas(x = 16) {
   if (x > 60 || x < 1) return;
-
-  const slider = document.querySelector(".slider");
+  canvas.replaceChildren();
   const current = document.querySelectorAll(".current-value");
   current[0].textContent = slider.value;
   current[1].textContent = slider.value;
